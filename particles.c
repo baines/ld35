@@ -6,8 +6,7 @@
 
 typedef struct {
 	Sprite sprite;
-	float x_vel;
-	float y_vel;
+	float x_pos, y_pos, x_vel, y_vel;
 	int ttl;
 } Particle;
 
@@ -28,6 +27,8 @@ void particles_spawn(SDL_Point pos, float xv, float yv, int amount){
 				.w = PARTICLE_SIZE,
 				.h = PARTICLE_SIZE,
 			},
+			.x_pos = pos.x,
+			.y_pos = pos.y,
 			.x_vel = xv,
 			.y_vel = yv,
 			.ttl = PARTICLE_TTL_LIMIT + (rand() % 400)
@@ -49,12 +50,14 @@ void particles_update(int delta){
 			// crappy gravity
 			p->y_vel -= (delta / 8.0f);
 
-			p->sprite.x += (p->x_vel / (float)delta);
-			p->sprite.y -= (p->y_vel / (float)delta);
+			p->x_pos += (p->x_vel / (float)delta);
+			p->y_pos -= (p->y_vel / (float)delta);
+
+			p->sprite.x = p->x_pos;
+			p->sprite.y = p->y_pos;
 		}
 		p->ttl -= delta;
 	}
-
 }
 
 void particles_draw(void){

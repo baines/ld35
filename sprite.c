@@ -1,10 +1,21 @@
 #include "game.h"
 #include "sprite.h"
 #include <SDL2/SDL_image.h>
+#include <float.h>
 
 // do numbers greater than 4096 exist?
 Sprite sprites[MAX_SPRITES];
 int num_sprites;
+
+void sprite_set_col(Sprite* s, unsigned int color){
+	SDL_Color c = {
+		.r = ((color >> 24) & 0xFF),
+		.g = ((color >> 16) & 0xFF),
+		.b = ((color >> 8) & 0xFF),
+		.a = ((color >> 0) & 0xFF),
+	};
+	s->color = c;
+}
 
 Sprite* sprite_push(int x, int y, int w, int h){
 	// black by default?
@@ -16,22 +27,17 @@ Sprite* sprite_push_col(int x, int y, int w, int h, unsigned int color){
 		return NULL;
 	}
 
-	SDL_Color c = {
-		.r = ((color >> 24) & 0xFF),
-		.g = ((color >> 16) & 0xFF),
-		.b = ((color >> 8) & 0xFF),
-		.a = ((color >> 0) & 0xFF),
-	};
-
 	Sprite s = {
 		.x = x,
 		.y = y,
 		.w = w,
 		.h = h,
-		.color = c
 	};
 
-	sprites[num_sprites++] = s;
+	sprites[num_sprites] = s;
+	sprite_set_col(sprites + num_sprites, color);
+
+	num_sprites++;
 
 	return sprites + (num_sprites - 1);
 }
@@ -74,4 +80,64 @@ SDL_Point sprite_get_center(Sprite* s){
 	};
 
 	return p;
+}
+
+void sprite_draw(Sprite* s){
+	SDL_SetRenderDrawColor(
+		renderer,
+		s->color.r,
+		s->color.g,
+		s->color.b,
+		s->color.a
+	);
+
+	if(s->tex){
+		SDL_Rect src_rect;
+
+		SDL_Rect* src_rect_ptr = NULL;
+
+		if(s->num_frames){
+			int tw, th;
+			SDL_QueryTexture(s->tex, NULL, NULL, &tw, &th);
+
+			src_rect.w = (tw / s->num_frames);
+			src_rect.x = src_rect.w * s->cur_frame;
+			src_rect.h = th;
+			src_rect.y = 0;
+
+			src_rect_ptr = &src_rect;
+		}
+
+		SDL_SetRenderTarget(renderer, NULL);
+		SDL_RenderCopy(renderer, s->tex, src_rect_ptr, &s->rect);
+	} else {
+		SDL_RenderFillRect(renderer, &s->rect);
+	}
+}
+
+void sprite_pop(Sprite* start, int num){
+	// probably need a proper memove here...
+	num_sprites -= num;
+	if(num_sprites < 0){
+		num_sprites = 0;
+	}
+}
+
+SDL_Rect sprite_get_hit_box(Sprite* s){
+
+	if(fabs(s->hit_box_scale) < 0.001f){
+		return s->rect;
+	}
+
+//	SDL_Point p = sprite_get_center(s);
+	float scale = s->hit_box_scale, half_scale = scale / 2.0f;
+
+	SDL_Rect ret = {
+		s->x + (half_scale * s->w),
+		s->y + (half_scale * s->h),
+		s->w * scale,
+		s->h * scale,
+	};
+
+	return ret;
 }

@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "room.h"
 #include "sprite.h"
+#include "game.h"
 
 #define ROOM_WIDTH  26
 #define ROOM_HEIGHT 15
@@ -37,14 +39,16 @@ Tile tile_desc[] = {
 	}
 };
 
-typedef struct {
-	int id;
-	int tiles[ROOM_WIDTH * ROOM_HEIGHT];
-} Room;
-
-Room current_room;
+static int sprite_offset;
 
 void room_load(int number){
+
+	printf("Loading room %d\n", number);
+
+	// already a room loaded
+	if(sprite_offset){
+		sprite_pop(sprites + sprite_offset, ROOM_WIDTH * ROOM_HEIGHT);
+	}
 
 	char* filename;
 	asprintf(&filename, "data/room%d.txt", number);
@@ -57,7 +61,9 @@ void room_load(int number){
 	int x = 0, y = 0;
 	int i = 0;
 
-	int* tiles = current_room.tiles;
+	int tile_type = 0;
+
+	sprite_offset = num_sprites;
 
 	while(fgets(line, sizeof(line), f)){
 
@@ -66,23 +72,22 @@ void room_load(int number){
 
 			switch(*c){
 				case '#': {
-					tiles[i]  = TILE_WALL;
+					tile_type = TILE_WALL;
 				} break;
 
 				case 'x': {
-					tiles[i] = TILE_SPIKE;
+					tile_type = TILE_SPIKE;
 				} break;
 
 				case '.':
 				default: {
-					tiles[i] = TILE_AIR;
+					tile_type = TILE_AIR;
 				} break;
 			}
 
-			Tile* t = tile_desc + tiles[i];
+			Tile* t = tile_desc + tile_type;
 
 			Sprite* s = sprite_push_col(x, y, 32, 32, t->color);
-			SDL_assert(s);
 
 			s->collision_type     = t->collision_type;
 			s->collision_response = t->collision_response;
@@ -96,4 +101,28 @@ void room_load(int number){
 	}
 
 	fclose(f);
+}
+
+void room_switch(int which){
+	//TODO
+	printf("switch %d\n", which);
+
+	int id = 0;
+
+	switch(which){
+		case ROOM_RIGHT: {
+
+		} break;
+		case ROOM_LEFT: {
+
+		} break;
+		case ROOM_UP: {
+
+		} break;
+		case ROOM_DOWN: {
+
+		} break;
+	}
+
+	room_load(id);
 }
