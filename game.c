@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include "game.h"
 #include "sprite.h"
+#include "room.h"
 
 typedef struct {
 	Sprite* sprite;
@@ -17,7 +18,9 @@ void game_init(void){
 
 	// player
 //	sprite_push_tex_frames(400, 200, 128, 128, "data/vamp.png", 8);
-	sprite_push_tex_frames(400, 200, 128, 128, "data/bat.png", 4);
+	sprite_push_tex_frames(400, 200, 64, 64, "data/bat.png", 4);
+
+	room_load(1);
 
 }
 
@@ -51,6 +54,18 @@ void game_update(int delta){
 }
 
 void game_draw(void){
+
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+	SDL_RenderDrawRect(renderer, NULL);
+
+	for(int i = 0; i < 32; ++i){
+		SDL_RenderDrawLine(renderer, i * 32, 0, i * 32, WIN_HEIGHT);
+	}
+
+	for(int i = 0; i < 32; ++i){
+		SDL_RenderDrawLine(renderer, 0, i * 32, WIN_WIDTH, i * 32);
+	}
 
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	for(int i = 0; i < num_sprites; ++i){

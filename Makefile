@@ -2,7 +2,7 @@ srcs := $(wildcard *.c)
 hdrs := $(wildcard *.h)
 objs := $(patsubst %.c,%.o,$(srcs))
 
-CFLAGS  := -std=c99 -g -Wall
+CFLAGS  := -D_GNU_SOURCE -std=c99 -g -Wall
 LDFLAGS := -lSDL2 -lm -lSDL2_image
 
 all: game

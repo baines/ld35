@@ -2,7 +2,8 @@
 #include "sprite.h"
 #include <SDL2/SDL_image.h>
 
-Sprite sprites[256];
+// do numbers greater than 4096 exist?
+Sprite sprites[MAX_SPRITES];
 int num_sprites;
 
 void sprite_push(int x, int y, int w, int h){

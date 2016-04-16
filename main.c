@@ -22,7 +22,7 @@ int main(int argc, char** argv){
 
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	if(SDL_CreateWindowAndRenderer(854, 480, 0, &win, &renderer) == -1){
+	if(SDL_CreateWindowAndRenderer(WIN_WIDTH, WIN_HEIGHT, 0, &win, &renderer) == -1){
 		fprintf(stderr, "SDL error creating window/renderer: %s\n", SDL_GetError());
 		return 1;
 	}
