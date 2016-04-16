@@ -9,12 +9,16 @@ typedef struct {
 	Sprite* sprite;
 	int speed;
 	int anim_timer;
+
+	bool is_bat;
 } Player;
 
 static Player player = {
 	.sprite = sprites,
 	.speed = 2,
 };
+
+static bool holding_space;
 
 void game_init(void){
 
@@ -45,17 +49,32 @@ void game_update(int delta){
 
 	SDL_Point move = { .x = player_s->x, .y = player_s->y };
 
-	if(keys[SDL_SCANCODE_W]){
-		move.y -= player.speed;
+	if(keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_UP]){
+		if(player.is_bat){
+			move.y -= player.speed;
+		}
 	}
-	if(keys[SDL_SCANCODE_S]){
-		move.y += player.speed;
+	if(keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN]){
+		if(player.is_bat){
+			move.y += player.speed;
+		}
 	}
-	if(keys[SDL_SCANCODE_A]){
+	if(keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT]){
 		move.x -= player.speed;
 	}
-	if(keys[SDL_SCANCODE_D]){
+	if(keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT]){
 		move.x += player.speed;
+	}
+
+	if(!holding_space && keys[SDL_SCANCODE_SPACE]){
+		const char* tex_name = player.is_bat ? "data/vamp.png" : "data/bat.png";
+		sprite_set_tex(player_s, tex_name, 0);
+		player.is_bat = !player.is_bat;
+		holding_space = true;
+	}
+
+	if(!keys[SDL_SCANCODE_SPACE]){
+		holding_space = false;
 	}
 
 	// collision with edges of screen

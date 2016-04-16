@@ -42,6 +42,7 @@ extern Sprite sprites[MAX_SPRITES];
 extern int num_sprites;
 
 void sprite_set_col(Sprite* s, unsigned int color);
+void sprite_set_tex(Sprite* s, const char* name, int frames);
 
 Sprite* sprite_push(int x, int y, int w, int h);
 Sprite* sprite_push_col(int x, int y, int w, int h, unsigned int color);

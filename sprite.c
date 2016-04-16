@@ -7,6 +7,13 @@
 Sprite sprites[MAX_SPRITES];
 int num_sprites;
 
+typedef struct {
+	char* name;
+	SDL_Texture* tex;
+} TexCache;
+
+TexCache tex_cache[128];
+
 void sprite_set_col(Sprite* s, unsigned int color){
 	SDL_Color c = {
 		.r = ((color >> 24) & 0xFF),
@@ -15,6 +22,43 @@ void sprite_set_col(Sprite* s, unsigned int color){
 		.a = ((color >> 0) & 0xFF),
 	};
 	s->color = c;
+}
+
+void sprite_set_tex(Sprite* s, const char* name, int frames){
+
+	SDL_Texture* tex = NULL;
+	for(int i = 0; i < array_count(tex_cache); ++i){
+		if(tex_cache[i].name && strcmp(name, tex_cache[i].name) == 0){
+			tex = tex_cache[i].tex;
+			break;
+		}
+	}
+
+	if(!tex){
+		SDL_Surface* surf = IMG_Load(name);
+		SDL_assert(surf);
+
+		tex = SDL_CreateTextureFromSurface(renderer, surf);
+		if(!tex){
+			fprintf(stderr, "wtf %s\n", SDL_GetError());
+		}
+
+		SDL_FreeSurface(surf);
+
+		SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+	}
+
+	if(!frames){
+		int tw, th;
+		SDL_QueryTexture(tex, NULL, NULL, &tw, &th);
+		frames = tw / th;
+		printf("auto frames: %s %d\n", name, frames);
+	}
+
+	s->cur_frame = 0;
+	s->num_frames = frames;
+
+	s->tex = tex;
 }
 
 Sprite* sprite_push(int x, int y, int w, int h){
@@ -47,24 +91,8 @@ Sprite* sprite_push_tex_frames(int x, int y, int w, int h, const char* name, int
 		return NULL;
 	}
 
-	SDL_Surface* surf = IMG_Load(name);
-	SDL_assert(surf);
-
-	SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surf);
-	if(!tex){
-		fprintf(stderr, "wtf %s\n", SDL_GetError());
-	}
-
-	SDL_FreeSurface(surf);
-
-	SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
-
 	sprite_push(x, y, w, h);
-	sprites[num_sprites-1].tex = tex;
-
-	if(frames){
-		sprites[num_sprites-1].num_frames = frames;
-	}
+	sprite_set_tex(sprites + num_sprites - 1, name, frames);
 
 	return sprites + (num_sprites - 1);
 }
