@@ -29,7 +29,7 @@ void game_init(void){
 static void game_do_player_death(void){
 
 	SDL_Point pos = sprite_get_center(player.sprite);
-	particles_spawn(pos, 0.f, 5.0f, 100); 
+	particles_spawn(pos, 0.f, 10.0f, 100); 
 
 	player.sprite->x = (WIN_WIDTH / 2);
 	player.sprite->y = (WIN_HEIGHT / 2);

@@ -2,6 +2,7 @@
 #include "sprite.h"
 
 #define PARTICLE_SIZE 6
+#define PARTICLE_TTL_LIMIT 1000
 
 typedef struct {
 	Sprite sprite;
@@ -10,29 +11,31 @@ typedef struct {
 	int ttl;
 } Particle;
 
-Particle particles[1024];
+Particle particles[4096];
 int particle_cursor;
 
 void particles_spawn(SDL_Point pos, float xv, float yv, int amount){
 
-	//TODO: better spread
-	xv += ((rand() % 800) - 400) / 100.0f;
-	yv += ((rand() % 800) - 400) / 100.0f;
+	for(int i = 0; i < amount; ++i){
+		//TODO: better spread
+		xv += ((rand() % 800) - 400) / 100.0f;
+		yv += ((rand() % 800) - 400) / 100.0f;
 
-	Particle p = {
-		.sprite = {
-			.x = pos.x,
-			.y = pos.y,
-			.w = PARTICLE_SIZE,
-			.h = PARTICLE_SIZE,
-		},
-		.x_vel = xv,
-		.y_vel = yv,
-		.ttl = 50 + (rand() % 100)
-	};
+		Particle p = {
+			.sprite = {
+				.x = pos.x,
+				.y = pos.y,
+				.w = PARTICLE_SIZE,
+				.h = PARTICLE_SIZE,
+			},
+			.x_vel = xv,
+			.y_vel = yv,
+			.ttl = PARTICLE_TTL_LIMIT + (rand() % 400)
+		};
 
-	particles[particle_cursor] = p;
-	particle_cursor = (particle_cursor + 1) % array_count(particles);
+		particles[particle_cursor] = p;
+		particle_cursor = (particle_cursor + 1) % array_count(particles);
+	}
 }
 
 void particles_update(int delta){
@@ -41,15 +44,15 @@ void particles_update(int delta){
 		Particle* p = particles + i;
 		if(p->ttl <= 0) continue;
 
-		if(p->ttl < 100){
+		if(p->ttl < PARTICLE_TTL_LIMIT){
 
 			// crappy gravity
-			p->y_vel -= 2;
+			p->y_vel -= (delta / 8.0f);
 
-			p->sprite.x += p->x_vel;
-			p->sprite.y -= p->y_vel;
+			p->sprite.x += (p->x_vel / (float)delta);
+			p->sprite.y -= (p->y_vel / (float)delta);
 		}
-		p->ttl--;
+		p->ttl -= delta;
 	}
 
 }
@@ -60,7 +63,7 @@ void particles_draw(void){
 
 	for(int i = 0; i < array_count(particles); ++i){
 		Particle* p = particles + i;
-		if(p->ttl <= 0 || p->ttl >= 100) continue;
+		if(p->ttl <= 0 || p->ttl >= PARTICLE_TTL_LIMIT) continue;
 
 		SDL_RenderFillRect(renderer, &p->sprite.rect);
 	}
