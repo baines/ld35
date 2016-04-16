@@ -3,6 +3,7 @@
 #include "game.h"
 #include "sprite.h"
 #include "room.h"
+#include "particles.h"
 
 typedef struct {
 	Sprite* sprite;
@@ -26,11 +27,17 @@ void game_init(void){
 }
 
 static void game_do_player_death(void){
+
+	SDL_Point pos = sprite_get_center(player.sprite);
+	particles_spawn(pos, 0.f, 5.0f, 100); 
+
 	player.sprite->x = (WIN_WIDTH / 2);
 	player.sprite->y = (WIN_HEIGHT / 2);
 }
 
 void game_update(int delta){
+
+	particles_update(delta);
 
 	const uint8_t* keys = SDL_GetKeyboardState(NULL);
 	Sprite* player_s = player.sprite;
@@ -151,6 +158,8 @@ void game_draw(void){
 	for(int i = 1; i < num_sprites; ++i){
 		game_draw_sprite(i);
 	}
+
+	particles_draw();
 
 	// draw player on top of stuff
 	game_draw_sprite(0);

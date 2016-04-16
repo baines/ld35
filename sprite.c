@@ -66,3 +66,12 @@ Sprite* sprite_push_tex_frames(int x, int y, int w, int h, const char* name, int
 Sprite* sprite_push_tex(int x, int y, int w, int h, const char* name){
 	return sprite_push_tex_frames(x, y, w, h, name, 0);
 }
+
+SDL_Point sprite_get_center(Sprite* s){
+	SDL_Point p = {
+		s->x + (s->w / 2),
+		s->y + (s->h / 2)
+	};
+
+	return p;
+}

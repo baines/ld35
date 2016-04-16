@@ -42,4 +42,6 @@ Sprite* sprite_push_col(int x, int y, int w, int h, unsigned int color);
 Sprite* sprite_push_tex(int x, int y, int w, int h, const char* name);
 Sprite* sprite_push_tex_frames(int x, int y, int w, int h, const char* name, int frames);
 
+SDL_Point sprite_get_center(Sprite* s);
+
 #endif
