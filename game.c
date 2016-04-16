@@ -1,5 +1,4 @@
 #include <SDL2/SDL.h>
-#include "stb_image.h"
 #include "game.h"
 #include "sprite.h"
 
@@ -17,8 +16,9 @@ static Player player = {
 void game_init(void){
 
 	// player
-	sprite_push_tex_frames(400, 200, 128, 128, "data/vamp.png", 8);
-	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+//	sprite_push_tex_frames(400, 200, 128, 128, "data/vamp.png", 8);
+	sprite_push_tex_frames(400, 200, 128, 128, "data/bat.png", 4);
+
 }
 
 void game_update(int delta){
