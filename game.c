@@ -16,7 +16,8 @@ static Player player = {
 void game_init(void){
 
 	// player
-	sprite_push_col(400, 200, 20, 20, 0x00ff00ff);
+	sprite_push_tex(400, 200, 32*4, 32, "data/bat.png");
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 }
 
 void game_update(float delta){
@@ -41,18 +42,22 @@ void game_update(float delta){
 	}
 }
 
-void game_draw(SDL_Renderer* r){
+void game_draw(void){
 
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	for(int i = 0; i < num_sprites; ++i){
 
 		SDL_SetRenderDrawColor(
-			r,
+			renderer,
 			sprites[i].color.r,
 			sprites[i].color.g,
 			sprites[i].color.b,
-			255 // TODO: work out alpha handling
+			sprites[i].color.a
 		);
 
-		SDL_RenderFillRect(r, &sprites[i].rect);
+//		SDL_RenderFillRect(renderer, &sprites[i].rect);
+		if(sprites[i].tex){
+			SDL_RenderCopy(renderer, sprites[i].tex, NULL, &sprites[i].rect);
+		}
 	}
 }

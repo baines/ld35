@@ -3,7 +3,7 @@ hdrs := $(wildcard *.h)
 objs := $(patsubst %.c,%.o,$(srcs))
 
 CFLAGS  := -std=c99 -g -Wall
-LDFLAGS := -lSDL2
+LDFLAGS := -lSDL2 -lm
 
 all: game
 

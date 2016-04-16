@@ -7,6 +7,9 @@
 
 bool running = true;
 
+SDL_Window* win;
+SDL_Renderer* renderer;
+
 void handle_event(SDL_Event* e){
 	switch(e->type){
 		case SDL_QUIT: {
@@ -19,10 +22,7 @@ int main(int argc, char** argv){
 
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	SDL_Window* win;
-	SDL_Renderer* r;
-
-	if(SDL_CreateWindowAndRenderer(854, 480, 0, &win, &r) == -1){
+	if(SDL_CreateWindowAndRenderer(854, 480, 0, &win, &renderer) == -1){
 		fprintf(stderr, "SDL error creating window/renderer: %s\n", SDL_GetError());
 		return 1;
 	}
@@ -54,11 +54,11 @@ int main(int argc, char** argv){
 
 		game_update(timer_diff);
 		
-		SDL_SetRenderDrawColor(r, 0, 0, 0, 255);
-		SDL_RenderClear(r);
-		game_draw(r);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+		game_draw();
 
-		SDL_RenderPresent(r);
+		SDL_RenderPresent(renderer);
 	}
 
 }

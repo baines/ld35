@@ -11,7 +11,7 @@ typedef struct {
 	};
 
 	SDL_Color color;
-	SDL_Texture tex;
+	SDL_Texture* tex;
 } Sprite;
 
 // 256 should be enough for anyone...
