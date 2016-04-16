@@ -1,7 +1,6 @@
 #include "game.h"
 #include "sprite.h"
-#define STB_IMAGE_IMPLEMENTATION 1
-#include "stb_image.h"
+#include <SDL2/SDL_image.h>
 
 Sprite sprites[256];
 int num_sprites;
@@ -39,14 +38,11 @@ void sprite_push_tex_frames(int x, int y, int w, int h, const char* name, int fr
 		return;
 	}
 
-	int comp_per_pixel;
-	int actual_w, actual_h;
 
-	void* pixels = stbi_load(name, &actual_w, &actual_h, &comp_per_pixel, 4);
-	SDL_assert(pixels);
+	SDL_Surface* surf = IMG_Load(name);
+	SDL_assert(surf);
 
-	printf("COMP PER PIXEL: %d\n", comp_per_pixel);
-
+	/*
 	SDL_Texture* tex = SDL_CreateTexture(
 		renderer,
 		SDL_PIXELFORMAT_RGBA8888,
@@ -61,12 +57,14 @@ void sprite_push_tex_frames(int x, int y, int w, int h, const char* name, int fr
 		pixels,
 		comp_per_pixel * actual_w
 	);
+*/
 
-	free(pixels);
-
+	SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surf);
 	if(!tex){
 		fprintf(stderr, "wtf %s\n", SDL_GetError());
 	}
+
+	SDL_FreeSurface(surf);
 
 	SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 

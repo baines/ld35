@@ -6,6 +6,7 @@
 typedef struct {
 	Sprite* sprite;
 	int speed;
+	int anim_timer;
 } Player;
 
 static Player player = {
@@ -13,12 +14,10 @@ static Player player = {
 	.speed = 2
 };
 
-static int anim_timer;
-
 void game_init(void){
 
 	// player
-	sprite_push_tex_frames(400, 200, 128, 128, "data/bat.png", 4);
+	sprite_push_tex_frames(400, 200, 128, 128, "data/vamp.png", 8);
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 }
 
@@ -43,11 +42,11 @@ void game_update(int delta){
 		player_s->x += player.speed;
 	}
 
-	anim_timer += delta;
+	player.anim_timer += delta;
 
-	if(anim_timer > 100){
+	if(player.anim_timer > 100){
 		player_s->cur_frame = (player_s->cur_frame + 1) % player_s->num_frames;
-		anim_timer = 0;
+		player.anim_timer = 0;
 	}
 }
 
@@ -63,7 +62,7 @@ void game_draw(void){
 			sprites[i].color.b,
 			sprites[i].color.a
 		);
-		
+
 		if(sprites[i].tex){
 			SDL_Rect src_rect;
 
@@ -81,6 +80,7 @@ void game_draw(void){
 				src_rect_ptr = &src_rect;
 			}
 
+			SDL_SetRenderTarget(renderer, NULL);
 			SDL_RenderCopy(renderer, sprites[i].tex, src_rect_ptr, &sprites[i].rect);
 		} else {
 			SDL_RenderFillRect(renderer, &sprites[i].rect);
