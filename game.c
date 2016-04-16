@@ -25,6 +25,11 @@ void game_init(void){
 
 }
 
+static void game_do_player_death(void){
+	player.sprite->x = (WIN_WIDTH / 2);
+	player.sprite->y = (WIN_HEIGHT / 2);
+}
+
 void game_update(int delta){
 
 	const uint8_t* keys = SDL_GetKeyboardState(NULL);
@@ -45,12 +50,6 @@ void game_update(int delta){
 		move.x += player.speed;
 	}
 
-	/*
-	SDL_Rect move_rect = player_s->rect;
-	move_rect.x = move.x;
-	move_rect.y = move.y;
-*/
-
 	SDL_Rect x_rect = player_s->rect;
 	SDL_Rect y_rect = player_s->rect;
 
@@ -60,35 +59,44 @@ void game_update(int delta){
 	bool collision_x = false;
 	bool collision_y = false;
 
+	int collision_response = 0;
+
 	// meh just loop over everything...
 	for(int i = 1; i < num_sprites; ++i){
 		switch(sprites[i].collision_type){
 			case COLLISION_BOX: {
 				if(SDL_HasIntersection(&x_rect, &sprites[i].rect)){
 					collision_x = true;
+					collision_response = sprites[i].collision_response;
 					break;
 				}
 				if(SDL_HasIntersection(&y_rect, &sprites[i].rect)){
 					collision_y = true;
+					collision_response = sprites[i].collision_response;
 					break;
 				}
 			} break;
 		}
 	}
 
-	if(!collision_x){
-		player_s->x = move.x;
-	}
+	if((collision_y || collision_x) && collision_response == CRESP_KILL){
+		game_do_player_death();
+	} else {
 
-	if(!collision_y){
-		player_s->y = move.y;
-	}
+		if(!collision_x){
+			player_s->x = move.x;
+		}
 
-	player.anim_timer += delta;
+		if(!collision_y){
+			player_s->y = move.y;
+		}
 
-	if(player.anim_timer > 100){
-		player_s->cur_frame = (player_s->cur_frame + 1) % player_s->num_frames;
-		player.anim_timer = 0;
+		player.anim_timer += delta;
+
+		if(player.anim_timer > 100){
+			player_s->cur_frame = (player_s->cur_frame + 1) % player_s->num_frames;
+			player.anim_timer = 0;
+		}
 	}
 }
 

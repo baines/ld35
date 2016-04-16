@@ -8,6 +8,11 @@ enum {
 	//TODO: triangles
 };
 
+enum {
+	CRESP_BLOCK,
+	CRESP_KILL,
+};
+
 typedef struct {
 	union {
 		SDL_Rect rect;
@@ -23,6 +28,7 @@ typedef struct {
 	int cur_frame;
 
 	int collision_type;
+	int collision_response;
 
 } Sprite;
 
