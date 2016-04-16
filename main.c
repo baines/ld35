@@ -50,6 +50,7 @@ int main(int argc, char** argv){
 		//XXX: test if this actually works...
 		if(timer_diff < 16667){
 			SDL_Delay(17 - (timer_diff / 1000));
+			timer_diff = 16667;
 		}
 
 		game_update(timer_diff / 1000);

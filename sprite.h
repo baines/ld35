@@ -34,6 +34,8 @@ typedef struct {
 	float hit_box_scale;
 	float radius;
 
+	int flip_mode;
+
 } Sprite;
 
 #define MAX_SPRITES 4096

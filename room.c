@@ -39,7 +39,34 @@ Tile tile_desc[] = {
 	}
 };
 
+static int current_room;
+
 static int sprite_offset;
+
+typedef struct {
+	int neighbours[4];
+} RoomMap;
+
+// hope you don't want more than 256 rooms
+static RoomMap room_map[256];
+
+void room_init(void){
+
+	FILE* f = fopen("data/map.txt", "rb");
+
+	// XXX: first line is ignored...
+	char line[256];
+	fgets(line, sizeof(line), f);
+
+	int id;
+	int n[4];
+	while(fscanf(f, "%d: %d %d %d %d\n", &id, n, n + 1, n + 2, n + 3) == 5){
+		puts("loaded some stuff");
+		SDL_assert(id < array_count(room_map));
+		memcpy(room_map[id].neighbours, n, sizeof(n));
+	}
+
+}
 
 void room_load(int number){
 
@@ -53,6 +80,10 @@ void room_load(int number){
 	char* filename;
 	asprintf(&filename, "data/room%d.txt", number);
 	FILE* f = fopen(filename, "rb");
+
+	SDL_assert(f);
+
+	current_room = number;
 
 	free(filename);
 
@@ -106,23 +137,7 @@ void room_load(int number){
 void room_switch(int which){
 	//TODO
 	printf("switch %d\n", which);
-
-	int id = 0;
-
-	switch(which){
-		case ROOM_RIGHT: {
-
-		} break;
-		case ROOM_LEFT: {
-
-		} break;
-		case ROOM_UP: {
-
-		} break;
-		case ROOM_DOWN: {
-
-		} break;
-	}
+	int id = room_map[current_room].neighbours[which];
 
 	room_load(id);
 }

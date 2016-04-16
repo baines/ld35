@@ -137,7 +137,7 @@ void sprite_draw(Sprite* s){
 		}
 
 		SDL_SetRenderTarget(renderer, NULL);
-		SDL_RenderCopy(renderer, s->tex, src_rect_ptr, &s->rect);
+		SDL_RenderCopyEx(renderer, s->tex, src_rect_ptr, &s->rect, 0, NULL, s->flip_mode);
 	} else {
 		SDL_RenderFillRect(renderer, &s->rect);
 	}
