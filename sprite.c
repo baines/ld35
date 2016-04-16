@@ -34,7 +34,7 @@ void sprite_push_col(int x, int y, int w, int h, unsigned int color){
 	sprites[num_sprites++] = s;
 }
 
-void sprite_push_tex(int x, int y, int w, int h, const char* name){
+void sprite_push_tex_frames(int x, int y, int w, int h, const char* name, int frames){
 	if(num_sprites >= array_count(sprites)){
 		return;
 	}
@@ -45,20 +45,39 @@ void sprite_push_tex(int x, int y, int w, int h, const char* name){
 	void* pixels = stbi_load(name, &actual_w, &actual_h, &comp_per_pixel, 4);
 	SDL_assert(pixels);
 
-
 	printf("COMP PER PIXEL: %d\n", comp_per_pixel);
 
-	SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surface);
+	SDL_Texture* tex = SDL_CreateTexture(
+		renderer,
+		SDL_PIXELFORMAT_RGBA8888,
+		SDL_TEXTUREACCESS_STATIC,
+		actual_w,
+		actual_h
+	);
+
+	SDL_UpdateTexture(
+		tex,
+		NULL,
+		pixels,
+		comp_per_pixel * actual_w
+	);
+
+	free(pixels);
 
 	if(!tex){
 		fprintf(stderr, "wtf %s\n", SDL_GetError());
 	}
-	SDL_assert(tex);
 
 	SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 
-	SDL_FreeSurface(surface);
-
 	sprite_push(x, y, w, h);
 	sprites[num_sprites-1].tex = tex;
+
+	if(frames){
+		sprites[num_sprites-1].num_frames = frames;
+	}
+}
+
+void sprite_push_tex(int x, int y, int w, int h, const char* name){
+	sprite_push_tex_frames(x, y, w, h, name, 0);
 }

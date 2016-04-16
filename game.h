@@ -8,7 +8,7 @@ extern SDL_Window* win;
 extern SDL_Renderer* renderer;
 
 void game_init(void);
-void game_update(float);
+void game_update(int);
 void game_draw(void);
 
 #endif

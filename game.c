@@ -13,14 +13,16 @@ static Player player = {
 	.speed = 2
 };
 
+static int anim_timer;
+
 void game_init(void){
 
 	// player
-	sprite_push_tex(400, 200, 32*4, 32, "data/bat.png");
+	sprite_push_tex_frames(400, 200, 128, 128, "data/bat.png", 4);
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 }
 
-void game_update(float delta){
+void game_update(int delta){
 
 	const uint8_t* keys = SDL_GetKeyboardState(NULL);
 	Sprite* player_s = player.sprite;
@@ -40,6 +42,13 @@ void game_update(float delta){
 	if(keys[SDL_SCANCODE_D]){
 		player_s->x += player.speed;
 	}
+
+	anim_timer += delta;
+
+	if(anim_timer > 100){
+		player_s->cur_frame = (player_s->cur_frame + 1) % player_s->num_frames;
+		anim_timer = 0;
+	}
 }
 
 void game_draw(void){
@@ -54,10 +63,27 @@ void game_draw(void){
 			sprites[i].color.b,
 			sprites[i].color.a
 		);
-
-//		SDL_RenderFillRect(renderer, &sprites[i].rect);
+		
 		if(sprites[i].tex){
-			SDL_RenderCopy(renderer, sprites[i].tex, NULL, &sprites[i].rect);
+			SDL_Rect src_rect;
+
+			SDL_Rect* src_rect_ptr = NULL;
+
+			if(sprites[i].num_frames){
+				int tw, th;
+				SDL_QueryTexture(sprites[i].tex, NULL, NULL, &tw, &th);
+
+				src_rect.w = (tw / sprites[i].num_frames);
+				src_rect.x = src_rect.w * sprites[i].cur_frame;
+				src_rect.h = th;
+				src_rect.y = 0;
+
+				src_rect_ptr = &src_rect;
+			}
+
+			SDL_RenderCopy(renderer, sprites[i].tex, src_rect_ptr, &sprites[i].rect);
+		} else {
+			SDL_RenderFillRect(renderer, &sprites[i].rect);
 		}
 	}
 }

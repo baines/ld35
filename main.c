@@ -52,7 +52,7 @@ int main(int argc, char** argv){
 			SDL_Delay(17 - (timer_diff / 1000));
 		}
 
-		game_update(timer_diff);
+		game_update(timer_diff / 1000);
 		
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
