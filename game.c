@@ -101,7 +101,6 @@ void game_update(int delta){
 				player.y_vel - (accel * 1.2f),
 				-(max_imp * accel * 1.2f)
 			);
-			printf("YV: %.2f\n", player.y_vel);
 			moving_on_up = true;
 		}
 	}
@@ -174,8 +173,8 @@ void game_update(int delta){
 		}
 	}
 
-	if(has_landed && !player.bat_timer && keys[SDL_SCANCODE_SPACE]){
-		if(player.cooldown > 0){
+	if(!player.bat_timer && keys[SDL_SCANCODE_SPACE]){
+		if(!has_landed || player.cooldown > 0){
 			sound_play("data/nope.ogg", 0);
 		} else {
 			sound_play("data/shapeshift.ogg", 0);
