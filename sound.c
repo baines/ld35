@@ -34,10 +34,13 @@ void sound_init(void){
 }
 
 void sound_play(const char* name, int loops){
+
+	return;
+
 	for(int i = 0; i < array_count(sounds); ++i){
 		if(strcmp(name, sounds[i].name) == 0){
 			if(Mix_PlayChannel(-1, sounds[i].sfx, loops) == -1){
-				fprintf(stderr, "SFX error: %s\n", Mix_GetError());
+//				fprintf(stderr, "SFX error: %s\n", Mix_GetError());
 			}
 			break;
 		}

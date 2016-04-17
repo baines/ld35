@@ -24,6 +24,7 @@ static Player player = {
 };
 
 static int screen_shake_timer;
+static int screen_shake_amount;
 
 #define PLAYER_TERMINAL_VEL 12.0f
 #define PLAYER_ACCEL 0.2f
@@ -45,6 +46,11 @@ void game_init(void){
 	room_load(1);
 }
 
+static void game_screen_shake(int duration, int amount){
+	screen_shake_timer = duration;
+	screen_shake_amount = amount;
+}
+
 static void game_do_player_death(void){
 
 	SDL_Point pos = sprite_get_center(player.sprite);
@@ -58,7 +64,7 @@ static void game_do_player_death(void){
 	player.sprite->x = (WIN_WIDTH / 2);
 	player.sprite->y = (WIN_HEIGHT / 2);
 
-	screen_shake_timer = 250;
+	game_screen_shake(250, 10);
 }
 
 void game_update(int delta){
@@ -66,6 +72,7 @@ void game_update(int delta){
 //	printf("delta: %d\n", delta);
 
 	particles_update(delta);
+	room_update(delta);
 
 	const uint8_t* keys = SDL_GetKeyboardState(NULL);
 	Sprite* player_s = player.sprite;
@@ -129,6 +136,7 @@ void game_update(int delta){
 	if(player.bat_timer > 0){
 		player.bat_timer -= delta;
 		if(player.bat_timer <= 0){
+			game_screen_shake(100, 4);
 			player.bat_timer = 0;
 			player.is_bat = false;
 			sound_play("data/unshapeshift.ogg", 0);
@@ -267,8 +275,8 @@ void game_update(int delta){
 
 		if(screen_shake_timer > 0){
 			SDL_Rect vp = viewport;
-			vp.x += (rand() % 10) - 5;
-			vp.y += (rand() % 10) - 5;
+			vp.x += (rand() % screen_shake_amount) - (screen_shake_amount/2);
+			vp.y += (rand() % screen_shake_amount) - (screen_shake_amount/2);
 			SDL_RenderSetViewport(renderer, &vp);
 		} else {
 			screen_shake_timer = 0;
