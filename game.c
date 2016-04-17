@@ -51,7 +51,7 @@ void game_init(void){
 
 	room_init();
 
-	room_load(4);
+	room_load(1);
 
 	SDL_Point p = room_get_spawn();
 	player.sprite->x = p.x;
@@ -89,14 +89,6 @@ void game_update(int delta){
 
 	const uint8_t* keys = SDL_GetKeyboardState(NULL);
 	Sprite* player_s = player.sprite;
-
-	if(player.is_bat){
-		player_s->hit_box_scale_x = 0.5f;
-		player_s->hit_box_scale_y = 0.5f;
-	} else {
-		player_s->hit_box_scale_x = 0.5f;
-		player_s->hit_box_scale_y = 1.0f;
-	}
 
 	const float accel   = (PLAYER_ACCEL * (delta / 16.0f));
 	const float max_imp = player.is_bat ? PLAYER_MAX_IMPULSE_BAT : PLAYER_MAX_IMPULSE;
@@ -170,6 +162,8 @@ void game_update(int delta){
 			sound_play("data/unshapeshift.ogg", 0);
 			sprite_set_tex(player_s, "data/vamp.png", 0);
 
+
+
 			// XXX: hack to stop clipping through walls :/
 			int x_hack = player_s->x < 32 ? 14 : player_s->x > (WIN_WIDTH-32) ? -14 : 0; 
 			int y_hack = player_s->y < 32 ? 14 : player_s->y > (WIN_HEIGHT-32) ? -14 : 0; 
@@ -191,6 +185,14 @@ void game_update(int delta){
 			player.y_vel = 0;
 			has_landed = false;
 		}
+	}
+
+	if(player.is_bat){
+		player_s->hit_box_scale_x = 0.5f;
+		player_s->hit_box_scale_y = 0.4f;
+	} else {
+		player_s->hit_box_scale_x = 0.5f;
+		player_s->hit_box_scale_y = 1.0f;
 	}
 
 	float grav = player.is_bat ? ((float)delta / 18.0f) : ((float)delta / 16.0f);
