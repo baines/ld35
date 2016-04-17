@@ -156,15 +156,14 @@ SDL_Rect sprite_get_hit_box(Sprite* s){
 	float x_scale = s->hit_box_scale_x;
 	float y_scale = s->hit_box_scale_y;
 	
-	if(fabs(x_scale) < 0.001f || fabs(y_scale) < 0.001f){
-		return s->rect;
-	}
+	if(fabs(x_scale) < 0.001f) x_scale = 1.0f;
+	if(fabs(y_scale) < 0.001f) y_scale = 1.0f;
 
 	SDL_Point p = sprite_get_center(s);
 
 	SDL_Rect ret = {
-		s->x + (p.x - s->x) * x_scale,
-		s->y + (p.y - s->y) * y_scale,
+		s->x + (p.x - s->x) * (1.0f - x_scale),
+		s->y + (p.y - s->y) * (1.0f - y_scale),
 		s->w * x_scale,
 		s->h * y_scale,
 	};

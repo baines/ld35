@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <float.h>
 #include <SDL2/SDL.h>
 #include "game.h"
 #include "sprite.h"
@@ -38,7 +39,7 @@ void game_init(void){
 	sprite_push_tex(400, 200, 64, 64, "data/vamp.png");
 	sprites[0].radius = 16;
 	sprites[0].hit_box_scale_x = 0.5f;
-	sprites[0].hit_box_scale_y = 0.5f;
+	sprites[0].hit_box_scale_y = 1.0f;
 
 	room_init();
 
@@ -56,7 +57,7 @@ static void game_do_player_death(void){
 
 void game_update(int delta){
 
-//	printf("delta: %d\n", delta);
+	printf("delta: %d\n", delta);
 
 	particles_update(delta);
 
@@ -72,7 +73,6 @@ void game_update(int delta){
 
 	const float accel   = (PLAYER_ACCEL * (delta / 16.0f));
 	const float max_imp = player.is_bat ? PLAYER_MAX_IMPULSE_BAT : PLAYER_MAX_IMPULSE;
-	bool pressed = false;
 
 	if(keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_UP]){
 		if(player.is_bat){
@@ -81,7 +81,6 @@ void game_update(int delta){
 				-(max_imp * accel)
 			);
 		}
-		pressed = true;
 	} else if(keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN]){
 		if(player.is_bat){
 			player.y_vel = MIN(
@@ -89,7 +88,6 @@ void game_update(int delta){
 				max_imp * accel
 			);
 		}
-		pressed = true;
 	} else if(player.is_bat){
 		int sign = player.y_vel > 0 ? 1 : -1;
 
@@ -106,14 +104,12 @@ void game_update(int delta){
 			-(max_imp * accel)
 		);
 		player_s->flip_mode = SDL_FLIP_HORIZONTAL;
-		pressed = true;
 	} else if(keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT]){
 		player.x_vel = MIN(
 			player.x_vel + accel,
 			max_imp * accel
 		);
 		player_s->flip_mode = SDL_FLIP_NONE;
-		pressed = true;
 	} else {
 		int sign = player.x_vel > 0 ? 1 : -1;
 
@@ -150,7 +146,7 @@ void game_update(int delta){
 
 	// animation
 	
-	if(player.is_bat || pressed){
+	if(player.is_bat || fabs(player.x_vel) > FLT_EPSILON){
 		player.anim_timer += delta;
 
 		if(player.anim_timer > 200){
@@ -198,7 +194,7 @@ void game_update(int delta){
 					player_s->x -= intersect.w;
 				}
 
-				//printf("X POS: %d\n", player_s->x);
+				printf("X POS: %d\n", player_s->x);
 			}
 
 			if(!collision_y && SDL_IntersectRect(&y_rect, &s_rect, &intersect)){
@@ -228,6 +224,9 @@ void game_update(int delta){
 	} else {
 
 		if(!collision_x){
+
+			printf("%.2f\n", player.x_vel);
+
 			player_s->x += player.x_vel;
 		}
 
