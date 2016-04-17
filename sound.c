@@ -11,7 +11,12 @@ Sound sounds[] = {
 	{ "data/die.ogg" },
 	{ "data/shapeshift.ogg" },
 	{ "data/unshapeshift.ogg" },
+	{ "data/nope.ogg" },
+	{ "data/powerup.ogg" },
 };
+
+#define NUM_CHANNELS 3
+static int channel;
 
 void sound_init(void){
 
@@ -31,18 +36,34 @@ void sound_init(void){
 		}
 		Mix_VolumeChunk(sounds[i].sfx, 64);
 	}
+
+	Mix_AllocateChannels(NUM_CHANNELS);
 }
+
 
 void sound_play(const char* name, int loops){
 
-	return;
+	Mix_Chunk* chunk = NULL;
 
 	for(int i = 0; i < array_count(sounds); ++i){
 		if(strcmp(name, sounds[i].name) == 0){
-			if(Mix_PlayChannel(-1, sounds[i].sfx, loops) == -1){
-//				fprintf(stderr, "SFX error: %s\n", Mix_GetError());
-			}
+			chunk = sounds[i].sfx;
 			break;
 		}
 	}
+
+	if(!chunk) return;
+
+	// don't double up sound effects
+	for(int i = 0; i < NUM_CHANNELS; ++i){
+		if(Mix_GetChunk(i) == chunk){
+			Mix_HaltChannel(i);
+		}
+	}
+
+	if(Mix_PlayChannel(channel, chunk, loops) == -1){
+		fprintf(stderr, "SFX error: %s\n", Mix_GetError());
+	}
+
+	channel = (channel + 1) % NUM_CHANNELS;
 }

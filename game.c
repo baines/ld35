@@ -178,6 +178,7 @@ void game_update(int delta){
 		if(player.cooldown > 0){
 			sound_play("data/nope.ogg", 0);
 		} else {
+			sound_play("data/shapeshift.ogg", 0);
 			sound_play("data/bat.ogg", 0);
 			sprite_set_tex(player_s, "data/bat.png", 0);
 			player.is_bat = true;
@@ -200,7 +201,7 @@ void game_update(int delta){
 
 	if(!player.is_bat || !moving_on_up){
 		if(player.is_bat){
-			printf("grav: %.2f, %.2f, %.2f\n", tv, player.y_vel, grav);
+		//	printf("grav: %.2f, %.2f, %.2f\n", tv, player.y_vel, grav);
 		}
 
 		player.y_vel = MIN(tv, player.y_vel + grav);
@@ -247,34 +248,6 @@ void game_update(int delta){
 			SDL_RenderDrawRect(renderer, &y_rect);
 			*/
 
-			if(SDL_IntersectRect(&x_rect, &s_rect, &intersect)){
-				collision_x = true;
-
-				if(sprites[i].collision_response == CRESP_KILL){
-					should_kill = true;
-					break;
-				}
-
-				if(sprites[i].collision_response == CRESP_POWERUP){
-					room_get_powerup(i);
-
-					if(player.is_bat){
-						player.bat_timer = BAT_TIMER_MAX;
-					}
-				} else {
-					player_s->x += (player.x_vel + player.x_remainder);
-					player.x_vel = 0;
-					player.x_remainder = 0;
-					if(intersect.x <= x_rect.x){
-						player_s->x += intersect.w;
-						x_rect.x += intersect.w;
-					} else {
-						player_s->x -= intersect.w;
-						x_rect.x -= intersect.w;
-					}
-				}
-			}
-
 			if(SDL_IntersectRect(&y_rect, &s_rect, &intersect)){
 				collision_y = true;
 
@@ -312,6 +285,33 @@ void game_update(int delta){
 				//printf("YI: %d %d %d, POS: %d\n", intersect.y, player.sprite->y, intersect.h, player_s->y);
 			}
 
+			if(SDL_IntersectRect(&x_rect, &s_rect, &intersect)){
+				collision_x = true;
+
+				if(sprites[i].collision_response == CRESP_KILL){
+					should_kill = true;
+					break;
+				}
+
+				if(sprites[i].collision_response == CRESP_POWERUP){
+					room_get_powerup(i);
+
+					if(player.is_bat){
+						player.bat_timer = BAT_TIMER_MAX;
+					}
+				} else {
+					player_s->x += (player.x_vel + player.x_remainder);
+					player.x_vel = 0;
+					player.x_remainder = 0;
+					if(intersect.x <= x_rect.x){
+						player_s->x += intersect.w;
+						x_rect.x += intersect.w;
+					} else {
+						player_s->x -= intersect.w;
+						x_rect.x -= intersect.w;
+					}
+				}
+			}
 		}
 	}
 
