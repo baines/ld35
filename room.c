@@ -116,7 +116,6 @@ void room_load(int number){
 
 	sprite_offset = num_sprites;
 
-
 	while(fgets(line, sizeof(line), f)){
 
 		for(const char* c = line; *c; ++c){
@@ -181,7 +180,7 @@ void room_load(int number){
 			if(j <= ROOM_WIDTH || tile_types[j - ROOM_WIDTH] != TILE_AIR){
 				tex_choice |= 4;
 			}
-			if(j >= ((ROOM_WIDTH - 1) * ROOM_HEIGHT - 1) || tile_types[j+ROOM_WIDTH] != TILE_AIR){
+			if(j >= (ROOM_WIDTH * (ROOM_HEIGHT-1)) || tile_types[j+ROOM_WIDTH] != TILE_AIR){
 				tex_choice |= 8;
 			}
 
@@ -242,4 +241,8 @@ void room_switch(int which){
 	int id = room_map[current_room].neighbours[which];
 
 	room_load(id);
+}
+
+void room_reset(void){
+
 }

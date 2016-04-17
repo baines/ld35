@@ -32,6 +32,7 @@ static int screen_shake_amount;
 #define PLAYER_MAX_IMPULSE_BAT 15.0f
 #define BAT_BAR_WIDTH 100
 #define BAT_BAR_HEIGHT 20
+#define BAT_TIMER_MAX 2000
 
 void game_init(void){
 
@@ -141,6 +142,8 @@ void game_update(int delta){
 			player.is_bat = false;
 			sound_play("data/unshapeshift.ogg", 0);
 			sprite_set_tex(player_s, "data/vamp.png", 0);
+
+			//TODO: fix clipping when changing out of bat
 		}
 	}
 
@@ -148,7 +151,7 @@ void game_update(int delta){
 		sound_play("data/bat.ogg", 0);
 		sprite_set_tex(player_s, "data/bat.png", 0);
 		player.is_bat = true;
-		player.bat_timer = 2000;
+		player.bat_timer = BAT_TIMER_MAX;
 		player.y_vel = 0;
 	}
 
@@ -202,14 +205,26 @@ void game_update(int delta){
 					break;
 				}
 
-				player_s->x += player.x_vel;
-				player.x_vel = 0;
-				if(intersect.x <= x_rect.x){
-					player_s->x += intersect.w;
-				} else {
-					player_s->x -= intersect.w;
-				}
+				if(sprites[i].collision_response == CRESP_POWERUP){
+					puts("this is the part where you get a powerup");
+					
+					//FIXME:
+					sprites[i].collision_type = COLLISION_NONE;
+					sprites[i].tex = 0;
 
+
+					if(player.is_bat){
+						player.bat_timer = BAT_TIMER_MAX;
+					}
+				} else {
+					player_s->x += player.x_vel;
+					player.x_vel = 0;
+					if(intersect.x <= x_rect.x){
+						player_s->x += intersect.w;
+					} else {
+						player_s->x -= intersect.w;
+					}
+				}
 			}
 
 			if(!collision_y && SDL_IntersectRect(&y_rect, &s_rect, &intersect)){
@@ -220,14 +235,25 @@ void game_update(int delta){
 					break;
 				}
 
-				player_s->y += player.y_vel;
-				player.y_vel = 0;
-				if(intersect.y <= y_rect.y){
-					player_s->y += intersect.h;
+				if(sprites[i].collision_response == CRESP_POWERUP){
+					puts("this is the part where you get a powerup");
+					
+					//FIXME:
+					sprites[i].collision_type = COLLISION_NONE;
+					sprites[i].tex = 0;
+					
+					if(player.is_bat){
+						player.bat_timer = BAT_TIMER_MAX;
+					}
 				} else {
-					player_s->y -= intersect.h;
+					player_s->y += player.y_vel;
+					player.y_vel = 0;
+					if(intersect.y <= y_rect.y){
+						player_s->y += intersect.h;
+					} else {
+						player_s->y -= intersect.h;
+					}
 				}
-
 				//printf("YI: %d %d %d, POS: %d\n", intersect.y, player.sprite->y, intersect.h, player_s->y);
 			}
 
@@ -312,7 +338,7 @@ void game_draw(void){
 		SDL_Rect bar_rect = {
 			.x = (WIN_WIDTH / 2) - (BAT_BAR_WIDTH / 2),
 			.y = 400,
-			.w = BAT_BAR_WIDTH * (player.bat_timer / 2000.0f),
+			.w = BAT_BAR_WIDTH * (player.bat_timer / (float)BAT_TIMER_MAX),
 			.h = BAT_BAR_HEIGHT,
 		};
 
