@@ -33,6 +33,7 @@ static int screen_shake_amount;
 static bool has_landed = false;
 
 #define PLAYER_TERMINAL_VEL 8.0f
+#define BAT_TERMINAL_VEL 4.0f
 #define PLAYER_ACCEL 0.2f
 #define PLAYER_MAX_IMPULSE 12.0f
 #define PLAYER_MAX_IMPULSE_BAT 15.0f
@@ -50,7 +51,7 @@ void game_init(void){
 
 	room_init();
 
-	room_load(1);
+	room_load(4);
 
 	SDL_Point p = room_get_spawn();
 	player.sprite->x = p.x;
@@ -91,7 +92,7 @@ void game_update(int delta){
 
 	if(player.is_bat){
 		player_s->hit_box_scale_x = 0.5f;
-		player_s->hit_box_scale_y = 0.6f;
+		player_s->hit_box_scale_y = 0.5f;
 	} else {
 		player_s->hit_box_scale_x = 0.5f;
 		player_s->hit_box_scale_y = 1.0f;
@@ -105,19 +106,22 @@ void game_update(int delta){
 	if(keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_UP]){
 		if(player.is_bat){
 			player.y_vel = MAX(
-				player.y_vel - accel,
-				-(max_imp * accel)
+				player.y_vel - (accel * 1.2f),
+				-(max_imp * accel * 1.2f)
 			);
+			printf("YV: %.2f\n", player.y_vel);
 			moving_on_up = true;
 		}
-	} else if(keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN]){
+	}
+	
+	if(keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN]){
 		if(player.is_bat){
 			player.y_vel = MIN(
 				player.y_vel + accel,
 				max_imp * accel
 			);
 		}
-	} else if(player.is_bat){
+	} else if(player.is_bat && !moving_on_up){
 		int sign = player.y_vel > 0 ? 1 : -1;
 
 		if(abs(player.y_vel) < 0.01f){
@@ -167,11 +171,11 @@ void game_update(int delta){
 			sprite_set_tex(player_s, "data/vamp.png", 0);
 
 			// XXX: hack to stop clipping through walls :/
-			int x_hack = player_s->x < (WIN_HEIGHT / 2) ? 14 : -14;
-			int y_hack = player_s->y < (WIN_HEIGHT / 2) ? 14 : -14;
+			int x_hack = player_s->x < 32 ? 14 : player_s->x > (WIN_WIDTH-32) ? -14 : 0; 
+			int y_hack = player_s->y < 32 ? 14 : player_s->y > (WIN_HEIGHT-32) ? -14 : 0; 
 			player_s->x += x_hack;
 			player_s->y += y_hack;
-			player.x_vel = player.y_vel =0;
+			player.x_vel = player.y_vel = 0;
 			player.x_remainder = player.y_remainder = 0;
 		}
 	}
@@ -190,9 +194,14 @@ void game_update(int delta){
 	}
 
 	float grav = player.is_bat ? ((float)delta / 18.0f) : ((float)delta / 16.0f);
+	float tv   = player.is_bat ? BAT_TERMINAL_VEL : PLAYER_TERMINAL_VEL;
 
 	if(!player.is_bat || !moving_on_up){
-		player.y_vel = MIN(PLAYER_TERMINAL_VEL, player.y_vel + grav);
+		if(player.is_bat){
+			printf("grav: %.2f, %.2f, %.2f\n", tv, player.y_vel, grav);
+		}
+
+		player.y_vel = MIN(tv, player.y_vel + grav);
 	}
 
 	// animation
@@ -405,7 +414,7 @@ void game_draw(void){
 	}
 
 	//debug
-//	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-//	SDL_Rect r = sprite_get_hit_box(sprites);
-//	SDL_RenderDrawRect(renderer, &r);
+	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+	SDL_Rect r = sprite_get_hit_box(sprites);
+	SDL_RenderDrawRect(renderer, &r);
 }
