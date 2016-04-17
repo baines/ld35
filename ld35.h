@@ -59,6 +59,8 @@ typedef struct {
 	int flip_mode;
 	int rotation;
 
+	int respawn_timer;
+
 } Sprite;
 
 #define MAX_SPRITES 4096
@@ -103,7 +105,8 @@ void room_update(int delta);
 //void room_draw();
 
 void room_switch(int which);
-
+void room_get_powerup(int index);
+SDL_Point room_get_spawn(void);
 // sound
 
 void sound_init(void);

@@ -51,6 +51,10 @@ void game_init(void){
 	room_init();
 
 	room_load(1);
+
+	SDL_Point p = room_get_spawn();
+	player.sprite->x = p.x;
+	player.sprite->y = p.y;
 }
 
 static void game_screen_shake(int duration, int amount){
@@ -68,8 +72,9 @@ static void game_do_player_death(void){
 	}
 	sound_play("data/die.ogg", 0);
 
-	player.sprite->x = (WIN_WIDTH / 2);
-	player.sprite->y = (WIN_HEIGHT / 2);
+	SDL_Point p = room_get_spawn();
+	player.sprite->x = p.x;
+	player.sprite->y = p.y;
 
 	game_screen_shake(250, 10);
 }
@@ -240,12 +245,7 @@ void game_update(int delta){
 				}
 
 				if(sprites[i].collision_response == CRESP_POWERUP){
-					puts("this is the part where you get a powerup");
-					
-					//FIXME:
-					sprites[i].collision_type = COLLISION_NONE;
-					sprites[i].tex = 0;
-
+					room_get_powerup(i);
 
 					if(player.is_bat){
 						player.bat_timer = BAT_TIMER_MAX;
@@ -273,11 +273,8 @@ void game_update(int delta){
 				}
 
 				if(sprites[i].collision_response == CRESP_POWERUP){
-					puts("this is the part where you get a powerup");
 					
-					//FIXME:
-					sprites[i].collision_type = COLLISION_NONE;
-					sprites[i].tex = 0;
+					room_get_powerup(i);
 					
 					if(player.is_bat){
 						player.bat_timer = BAT_TIMER_MAX;
