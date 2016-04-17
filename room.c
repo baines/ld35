@@ -206,8 +206,6 @@ void room_load(int number){
 				[15] = { 4, 0 }, // FIXME, needs different texture
 			};
 
-			printf("lookup %d %d = %d %d\n", j, tex_choice, tex_lookup[tex_choice].frame, tex_lookup[tex_choice].rotation);
-
 			sprites[sprite_offset + j].cur_frame = tex_lookup[tex_choice].frame;
 			sprites[sprite_offset + j].rotation = tex_lookup[tex_choice].rotation;
 		}

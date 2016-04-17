@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <time.h>
 #include "ld35.h"
 
 bool running = true;
@@ -19,6 +20,8 @@ void handle_event(SDL_Event* e){
 }
 
 int main(int argc, char** argv){
+
+	srand(time(0));
 
 	SDL_Init(SDL_INIT_EVERYTHING);
 
