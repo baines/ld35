@@ -153,18 +153,20 @@ void sprite_pop(Sprite* start, int num){
 
 SDL_Rect sprite_get_hit_box(Sprite* s){
 
-	if(fabs(s->hit_box_scale) < 0.001f){
+	float x_scale = s->hit_box_scale_x;
+	float y_scale = s->hit_box_scale_y;
+	
+	if(fabs(x_scale) < 0.001f || fabs(y_scale) < 0.001f){
 		return s->rect;
 	}
 
-//	SDL_Point p = sprite_get_center(s);
-	float scale = s->hit_box_scale, half_scale = scale / 2.0f;
+	SDL_Point p = sprite_get_center(s);
 
 	SDL_Rect ret = {
-		s->x + (half_scale * s->w),
-		s->y + (half_scale * s->h),
-		s->w * scale,
-		s->h * scale,
+		s->x + (p.x - s->x) * x_scale,
+		s->y + (p.y - s->y) * y_scale,
+		s->w * x_scale,
+		s->h * y_scale,
 	};
 
 	return ret;

@@ -4,6 +4,9 @@
 
 #define array_count(x) (sizeof(x) / sizeof(*x))
 
+#define MAX(a,b) ((a) >  (b) ? (a) : (b))
+#define MIN(a,b) ((a) <= (b) ? (a) : (b))
+
 #define WIN_WIDTH  832
 #define WIN_HEIGHT 480
 
