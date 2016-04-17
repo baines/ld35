@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "room.h"
-#include "sprite.h"
-#include "game.h"
+#include "ld35.h"
 
 #define ROOM_WIDTH  26
 #define ROOM_HEIGHT 15

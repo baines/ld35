@@ -1,10 +1,7 @@
 #include <stdbool.h>
 #include <float.h>
 #include <SDL2/SDL.h>
-#include "game.h"
-#include "sprite.h"
-#include "room.h"
-#include "particles.h"
+#include "ld35.h"
 
 typedef struct {
 	Sprite* sprite;
@@ -25,6 +22,8 @@ static Player player = {
 	.speed = 2,
 	.is_bat = false,
 };
+
+static int screen_shake_timer;
 
 #define PLAYER_TERMINAL_VEL 12.0f
 #define PLAYER_ACCEL 0.2f
@@ -49,15 +48,22 @@ void game_init(void){
 static void game_do_player_death(void){
 
 	SDL_Point pos = sprite_get_center(player.sprite);
-	particles_spawn(pos, 0.f, 10.0f, 100); 
+	particles_spawn(pos, 0.f, 30.0f, 100); 
+
+	if(player.is_bat){
+		sound_play("data/bat.ogg", 0);
+	}
+	sound_play("data/die.ogg", 0);
 
 	player.sprite->x = (WIN_WIDTH / 2);
 	player.sprite->y = (WIN_HEIGHT / 2);
+
+	screen_shake_timer = 250;
 }
 
 void game_update(int delta){
 
-	printf("delta: %d\n", delta);
+//	printf("delta: %d\n", delta);
 
 	particles_update(delta);
 
@@ -125,11 +131,13 @@ void game_update(int delta){
 		if(player.bat_timer <= 0){
 			player.bat_timer = 0;
 			player.is_bat = false;
+			sound_play("data/unshapeshift.ogg", 0);
 			sprite_set_tex(player_s, "data/vamp.png", 0);
 		}
 	}
 
 	if(!player.bat_timer && keys[SDL_SCANCODE_SPACE]){
+		sound_play("data/bat.ogg", 0);
 		sprite_set_tex(player_s, "data/bat.png", 0);
 		player.is_bat = true;
 		player.bat_timer = 2000;
@@ -194,7 +202,6 @@ void game_update(int delta){
 					player_s->x -= intersect.w;
 				}
 
-				printf("X POS: %d\n", player_s->x);
 			}
 
 			if(!collision_y && SDL_IntersectRect(&y_rect, &s_rect, &intersect)){
@@ -224,9 +231,6 @@ void game_update(int delta){
 	} else {
 
 		if(!collision_x){
-
-			printf("%.2f\n", player.x_vel);
-
 			player_s->x += player.x_vel;
 		}
 
@@ -256,6 +260,20 @@ void game_update(int delta){
 		room_switch(ROOM_UP);
 		player_s->y = WIN_HEIGHT - (player_s->h + 1);
 		printf("setting player y %d\n", player_s->y);
+	}
+
+	if(screen_shake_timer > 0){
+		screen_shake_timer -= delta;
+
+		if(screen_shake_timer > 0){
+			SDL_Rect vp = viewport;
+			vp.x += (rand() % 10) - 5;
+			vp.y += (rand() % 10) - 5;
+			SDL_RenderSetViewport(renderer, &vp);
+		} else {
+			screen_shake_timer = 0;
+			SDL_RenderSetViewport(renderer, &viewport);
+		}
 	}
 }
 

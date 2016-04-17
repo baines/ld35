@@ -1,7 +1,6 @@
-#include "game.h"
-#include "sprite.h"
 #include <SDL2/SDL_image.h>
 #include <float.h>
+#include "ld35.h"
 
 // do numbers greater than 4096 exist?
 Sprite sprites[MAX_SPRITES];
@@ -13,6 +12,7 @@ typedef struct {
 } TexCache;
 
 TexCache tex_cache[128];
+int tex_cache_count;
 
 void sprite_set_col(Sprite* s, unsigned int color){
 	SDL_Color c = {
@@ -27,7 +27,7 @@ void sprite_set_col(Sprite* s, unsigned int color){
 void sprite_set_tex(Sprite* s, const char* name, int frames){
 
 	SDL_Texture* tex = NULL;
-	for(int i = 0; i < array_count(tex_cache); ++i){
+	for(int i = 0; i < tex_cache_count; ++i){
 		if(tex_cache[i].name && strcmp(name, tex_cache[i].name) == 0){
 			tex = tex_cache[i].tex;
 			break;
@@ -46,13 +46,18 @@ void sprite_set_tex(Sprite* s, const char* name, int frames){
 		SDL_FreeSurface(surf);
 
 		SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+
+		TexCache tc = {
+			.name = strdup(name),
+			.tex  = tex
+		};
+		tex_cache[tex_cache_count++] = tc;
 	}
 
 	if(!frames){
 		int tw, th;
 		SDL_QueryTexture(tex, NULL, NULL, &tw, &th);
 		frames = tw / th;
-		printf("auto frames: %s %d\n", name, frames);
 	}
 
 	s->cur_frame = 0;

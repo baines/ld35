@@ -1,8 +1,7 @@
-#include "game.h"
-#include "sprite.h"
+#include "ld35.h"
 
 #define PARTICLE_SIZE 6
-#define PARTICLE_TTL_LIMIT 1000
+#define PARTICLE_TTL_LIMIT 1500
 
 typedef struct {
 	Sprite sprite;

@@ -1,6 +1,26 @@
-#ifndef SPRITE_H_
-#define SPRITE_H_
+#ifndef LD35_H_
+#define LD35_H_
 #include <SDL2/SDL.h>
+
+// main
+
+#define array_count(x) (sizeof(x) / sizeof(*x))
+
+#define MAX(a,b) ((a) >  (b) ? (a) : (b))
+#define MIN(a,b) ((a) <= (b) ? (a) : (b))
+
+#define WIN_WIDTH  832
+#define WIN_HEIGHT 480
+
+extern SDL_Window* win;
+extern SDL_Renderer* renderer;
+extern SDL_Rect viewport;
+
+void game_init(void);
+void game_update(int);
+void game_draw(void);
+
+// sprites
 
 enum {
 	COLLISION_NONE,
@@ -59,5 +79,32 @@ void sprite_draw(Sprite* s);
 void sprite_pop(Sprite* start, int num);
 
 SDL_Rect sprite_get_hit_box(Sprite* s);
+
+// particles
+
+void particles_spawn(SDL_Point pos, float xv, float yv, int amount);
+void particles_update(int delta);
+void particles_draw(void);
+
+// room
+
+enum {
+	ROOM_UP,
+	ROOM_DOWN,
+	ROOM_LEFT,
+	ROOM_RIGHT,
+};
+
+void room_init(void);
+void room_load(int number);
+void room_update(int delta);
+//void room_draw();
+
+void room_switch(int which);
+
+// sound
+
+void sound_init(void);
+void sound_play(const char* name, int loops);
 
 #endif
