@@ -17,7 +17,7 @@ extern SDL_Renderer* renderer;
 extern SDL_Rect viewport;
 
 void game_init(void);
-void game_update(int);
+void game_update(double);
 void game_draw(void);
 
 // sprites
@@ -63,7 +63,7 @@ typedef struct {
 
 } Sprite;
 
-#define MAX_SPRITES 4096
+#define MAX_SPRITES 400
 
 extern Sprite sprites[MAX_SPRITES];
 extern int num_sprites;
@@ -87,7 +87,7 @@ SDL_Rect sprite_get_hit_box(Sprite* s);
 // particles
 
 void particles_spawn(SDL_Point pos, float xv, float yv, int amount);
-void particles_update(int delta);
+void particles_update(double delta);
 void particles_draw(void);
 
 // room
@@ -101,7 +101,7 @@ enum {
 
 void room_init(void);
 void room_load(int number);
-void room_update(int delta);
+void room_update(double delta);
 //void room_draw();
 
 void room_switch(int which);

@@ -83,7 +83,6 @@ void room_init(void){
 	int id;
 	int n[4];
 	while(fscanf(f, "%d: %d %d %d %d\n", &id, n, n + 1, n + 2, n + 3) == 5){
-		puts("loaded some stuff");
 		SDL_assert(id < array_count(room_map));
 		memcpy(room_map[id].neighbours, n, sizeof(n));
 	}
@@ -232,11 +231,11 @@ void room_load(int number){
 
 static int anim_timer; 
 
-void room_update(int delta){
+void room_update(double delta){
 
 	anim_timer += delta;
 
-	if(anim_timer > 200){
+	if(anim_timer > 150){
 		for(int i = 0; i < (ROOM_WIDTH * ROOM_HEIGHT); ++i){
 			Tile*   t = tile_desc + tile_types[i];
 			Sprite* s = sprites + sprite_offset + i;
@@ -265,15 +264,8 @@ void room_update(int delta){
 }
 
 void room_switch(int which){
-	//TODO
-	printf("switch %d\n", which);
 	int id = room_map[current_room].neighbours[which];
-
 	room_load(id);
-}
-
-void room_reset(void){
-
 }
 
 void room_get_powerup(int index){
@@ -281,7 +273,7 @@ void room_get_powerup(int index){
 
 	s->collision_type = COLLISION_NONE;
 	s->tex = 0;
-	s->respawn_timer = 3000;
+	s->respawn_timer = 2000;
 
 	sound_play("data/powerup.ogg", 0);
 

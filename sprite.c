@@ -1,6 +1,10 @@
 #include <SDL2/SDL_image.h>
 #include <float.h>
 #include "ld35.h"
+#ifndef __EMSCRIPTEN__
+#define STB_IMAGE_IMPLEMENTATION 1
+#endif
+#include "stb_image.h"
 
 // do numbers greater than 4096 exist?
 Sprite sprites[MAX_SPRITES];
@@ -11,7 +15,7 @@ typedef struct {
 	SDL_Texture* tex;
 } TexCache;
 
-TexCache tex_cache[128];
+TexCache tex_cache[8];
 int tex_cache_count;
 
 void sprite_set_col(Sprite* s, unsigned int color){
@@ -35,15 +39,20 @@ void sprite_set_tex(Sprite* s, const char* name, int frames){
 	}
 
 	if(!tex){
-		SDL_Surface* surf = IMG_Load(name);
-		SDL_assert(surf);
+		int tw, th, cpp;
+		void* pixels = stbi_load(name, &tw, &th, &cpp, 4);
 
-		tex = SDL_CreateTextureFromSurface(renderer, surf);
+		tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, tw, th);
 		if(!tex){
 			fprintf(stderr, "wtf %s\n", SDL_GetError());
+			//SDL_FreeSurface(surf);
+			return;
 		}
 
-		SDL_FreeSurface(surf);
+		SDL_UpdateTexture(tex, NULL, pixels, cpp * tw);
+
+		free(pixels);
+		//SDL_FreeSurface(surf);
 
 		SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
 

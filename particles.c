@@ -9,15 +9,15 @@ typedef struct {
 	int ttl;
 } Particle;
 
-Particle particles[4096];
+Particle particles[512];
 int particle_cursor;
 
 void particles_spawn(SDL_Point pos, float xv, float yv, int amount){
 
 	for(int i = 0; i < amount; ++i){
 		//TODO: better spread
-		xv += ((rand() % 800) - 400) / 100.0f;
-		yv += ((rand() % 800) - 400) / 100.0f;
+		xv += ((rand() % 800) - 400) / 40.0f;
+		yv += ((rand() % 800) - 400) / 40.0f;
 
 		Particle p = {
 			.sprite = {
@@ -38,7 +38,7 @@ void particles_spawn(SDL_Point pos, float xv, float yv, int amount){
 	}
 }
 
-void particles_update(int delta){
+void particles_update(double delta){
 
 	for(int i = 0; i < array_count(particles); ++i){
 		Particle* p = particles + i;
@@ -47,7 +47,7 @@ void particles_update(int delta){
 		if(p->ttl < PARTICLE_TTL_LIMIT){
 
 			// crappy gravity
-			p->y_vel -= (delta / 8.0f);
+			p->y_vel -= (delta * 0.8);
 
 			p->x_pos += (p->x_vel / (float)delta);
 			p->y_pos -= (p->y_vel / (float)delta);
