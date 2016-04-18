@@ -415,7 +415,7 @@ void game_draw(void){
 	}
 
 	//debug
-	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-	SDL_Rect r = sprite_get_hit_box(sprites);
-	SDL_RenderDrawRect(renderer, &r);
+//	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+//	SDL_Rect r = sprite_get_hit_box(sprites);
+//	SDL_RenderDrawRect(renderer, &r);
 }

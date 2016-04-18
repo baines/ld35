@@ -11,6 +11,8 @@ SDL_Window* win;
 SDL_Renderer* renderer;
 SDL_Rect viewport;
 
+static int titlescreen_timer = 4000;
+
 void handle_event(SDL_Event* e){
 	switch(e->type){
 		case SDL_QUIT: {
@@ -42,6 +44,14 @@ int main(int argc, char** argv){
 	sound_init();
 	game_init();
 
+	Sprite titlescreen = {
+		.x = (WIN_WIDTH / 2) - (512/2),
+		.y = (WIN_HEIGHT / 2) - (256/2),
+		.w = 512,
+		.h = 256,
+	};
+	sprite_set_tex(&titlescreen, "data/title.png", 1);
+
 	timer_start = SDL_GetPerformanceCounter() / timer_freq;
 	
 	while(running){
@@ -61,10 +71,14 @@ int main(int argc, char** argv){
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
-		
-		game_update(timer_diff / 1000);
-		game_draw();
-
+	
+		if(titlescreen_timer > 0){
+			titlescreen_timer -= (timer_diff / 1000);
+			sprite_draw(&titlescreen);
+		} else {
+			game_update(timer_diff / 1000);
+			game_draw();
+		}
 		SDL_RenderPresent(renderer);
 	}
 
