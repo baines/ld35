@@ -32,7 +32,7 @@ int main(int argc, char** argv){
 		return 1;
 	}
 
-	SDL_SetWindowTitle(win, "LD35");
+	SDL_SetWindowTitle(win, "VampShift: The Bloodening");
 
 	SDL_RenderGetViewport(renderer, &viewport);
 
