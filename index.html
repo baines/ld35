@@ -1,0 +1,80 @@
+<html>
+<head>
+<title>VampShift: The Bloodening</title>
+</head>
+<style>
+html {
+	font-size: 11px;
+	ont-family: 'Liberation Mono', Consolas, monospace;
+	color: #fff;
+	background-color: #1B1825;
+}
+
+body {
+	text-align: center;
+	margin: 10px auto;
+	width: 844px;
+}
+
+#main {
+	background: #000;
+	border: 6px double #fff;
+	margin: 10px 0;
+}
+
+a:link {
+	color: #fff;
+	text-decoration: underline;
+}
+
+.emscripten {
+	border: 0px none;
+}
+</style>
+</head>
+<body>
+<img src="webheader.png" />
+<div id="main">
+<canvas class="emscripten" id="canvas"></canvas>
+</div>
+<a href="http://ludumdare.com/compo/ludum-dare-35/?action=preview&uid=64951">View on Ludum Dare</a>
+<p>
+NOTE: This emscripten port was created a day after the Ludum Dare compo ended,
+and contains timing/physics/collision bug fixes not present in the original
+downloadable versions. You should take that into account if you plan to rate the
+game based solely on this web version.
+</p>
+<script>
+var Module = {
+	preRun: [],
+	postRun: [],
+	canvas: (function() {
+		var canvas = document.getElementById('canvas');
+		canvas.addEventListener("webglcontextlost", function(e){
+			alert('WebGL context lost. You will need to reload the page.');
+			e.preventDefault();
+		}, false);
+		return canvas;
+	})(),
+};
+</script>
+<script>
+(function() {
+	var memoryInitializer = 'webgame.html.mem';
+	if (typeof Module['locateFile'] === 'function') {
+		memoryInitializer = Module['locateFile'](memoryInitializer);
+	} else if (Module['memoryInitializerPrefixURL']) {
+		memoryInitializer = Module['memoryInitializerPrefixURL'] + memoryInitializer;
+	}
+	var xhr = Module['memoryInitializerRequest'] = new XMLHttpRequest();
+	xhr.open('GET', memoryInitializer, true);
+	xhr.responseType = 'arraybuffer';
+	xhr.send(null);
+})();
+
+var script = document.createElement('script');
+script.src = "webgame.js";
+document.body.appendChild(script);
+</script>
+</body>
+</html>
