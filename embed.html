@@ -4,46 +4,16 @@
 </head>
 <style>
 html {
-	font-size: 11px;
-	font-family: 'Liberation Mono', Consolas, monospace;
-	color: #fff;
-	background-color: #1B1825;
+	background-color: #000;
 }
-
-body {
-	text-align: center;
-	margin: 10px auto;
-	width: 844px;
-}
-
-#main {
-	background: #000;
-	border: 6px double #fff;
-	margin: 10px 0;
-}
-
-a:link {
-	color: #fff;
-	text-decoration: underline;
-}
-
 .emscripten {
 	border: 0px none;
 }
 </style>
 </head>
 <body>
-<img src="webheader.png" />
-<div id="main">
 <canvas class="emscripten" id="canvas"></canvas>
 </div>
-<a href="http://ludumdare.com/compo/ludum-dare-35/?action=preview&uid=64951">View on Ludum Dare</a>
-<p>
-NOTE: This emscripten port was created a day after the Ludum Dare compo ended,
-and contains timing/physics/collision bug fixes not present in the original
-downloadable versions. You should take that into account if you plan to rate the
-game based solely on this web version.
-</p>
 <script>
 var Module = {
 	preRun: [],
