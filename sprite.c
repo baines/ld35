@@ -1,4 +1,4 @@
-#include <SDL2/SDL_image.h>
+//#include <SDL2/SDL_image.h>
 #include <float.h>
 #include "ld35.h"
 #ifndef __EMSCRIPTEN__

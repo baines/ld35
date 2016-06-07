@@ -169,14 +169,14 @@ void game_update(double delta){
 	}
 
 	if(player.is_bat){
-		player_s->hit_box_scale_x = 0.5f;
-		player_s->hit_box_scale_y = 0.4f;
+		player_s->hit_box_scale_x = 0.55f;
+		player_s->hit_box_scale_y = 0.3f;
 	} else {
-		player_s->hit_box_scale_x = 0.5f;
-		player_s->hit_box_scale_y = 1.0f;
+		player_s->hit_box_scale_x = 0.4f;
+		player_s->hit_box_scale_y = 0.8f;
 	}
 
-	double grav = player.is_bat ? 0.45 : 1.2;
+	double grav = player.is_bat ? 0.41 : 1.2;
 	double tv   = player.is_bat ? BAT_TERMINAL_VEL : PLAYER_TERMINAL_VEL;
 
 	grav *= (delta / 16.0);
@@ -221,8 +221,9 @@ void game_update(double delta){
 			SDL_Rect y_rect = p_rect;
 			y_rect.y += (player.y_vel + player.y_remainder);
 
-			if(SDL_HasIntersection(&y_rect, &s_rect)){
-				collision_y = true;
+			SDL_Rect intersect;
+
+			if(SDL_IntersectRect(&y_rect, &s_rect, &intersect)){
 
 				//SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 				//SDL_RenderFillRect(renderer, &s_rect);
@@ -240,23 +241,22 @@ void game_update(double delta){
 						player.bat_timer = BAT_TIMER_MAX;
 					}
 				} else {
-					
-					if(p_rect.y < s_rect.y){
-						player_s->y -= ((p_rect.y + p_rect.h) - s_rect.y);
+					collision_y = true;
+
+					if(y_rect.y < s_rect.y){
+						player_s->y -= intersect.h;
 						has_landed = true;
 					} else {
-						player_s->y += ((s_rect.y + s_rect.h) - p_rect.y);
+						player_s->y += intersect.h;
 					}
-					
-					player.y_vel = player.y_remainder = 0;
+
 				}
 			}
 
 			SDL_Rect x_rect = sprite_get_hit_box(player_s); 
 			x_rect.x += (player.x_vel + player.x_remainder);
 			
-			if(SDL_HasIntersection(&x_rect, &s_rect)){
-				collision_x = true;
+			if(SDL_IntersectRect(&x_rect, &s_rect, &intersect)){
 
 				//SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
 				//SDL_RenderFillRect(renderer, &s_rect);
@@ -273,13 +273,14 @@ void game_update(double delta){
 						player.bat_timer = BAT_TIMER_MAX;
 					}
 				} else {
-					if(p_rect.x < s_rect.x){
-						player_s->x -= ((p_rect.x + p_rect.w) - s_rect.x);
+					collision_x = true;
+
+					if(x_rect.x <= s_rect.x){
+						player_s->x -= intersect.w;
 					} else {
-						player_s->x += ((s_rect.x + s_rect.w) - p_rect.x);
+						player_s->x += intersect.w;
 					}
 
-					player.x_vel = player.x_remainder = 0;
 				}
 			}
 		}
@@ -288,22 +289,18 @@ void game_update(double delta){
 	if(should_kill){
 		game_do_player_death();
 	} else {
+		float unused;
 
-		if(!collision_x){
-			float x_vel_i;
-			float x_vel_f = modff(player.x_vel, &x_vel_i);
-			player_s->x += (player.x_vel + player.x_remainder);
-			player.x_remainder = x_vel_f;
-		}
+		player_s->x += (player.x_vel + player.x_remainder);
+		player.x_remainder = modff(player.x_vel, &unused);
 
-		if(!collision_y){
-			float y_vel_i;
-			float y_vel_f = modff(player.y_vel, &y_vel_i);
-			player_s->y += (player.y_vel + player.y_remainder);
-			player.y_remainder = y_vel_f;
-		}
+		player_s->y += (player.y_vel + player.y_remainder);
+		player.y_remainder = modff(player.y_vel, &unused);
+
+		if(collision_x) player.x_vel = player.x_remainder = 0;
+		if(collision_y) player.y_vel = player.y_remainder = 0;
 	}
-	
+
 	// collision with edges of screen
 
 	SDL_Point p = sprite_get_center(player_s);
