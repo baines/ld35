@@ -1,7 +1,6 @@
 <html>
 <head>
 <title>VampShift: The Bloodening</title>
-</head>
 <style>
 html {
 	font-size: 11px;
@@ -18,6 +17,8 @@ body {
 
 #main {
 	background: #000;
+	color: #fff;
+	font-size: 20px;
 	border: 6px double #fff;
 	margin: 10px 0;
 }
@@ -35,14 +36,12 @@ a:link {
 <body>
 <img src="webheader.png" />
 <div id="main">
-<canvas class="emscripten" id="canvas"></canvas>
+<canvas class="emscripten" id="canvas">Loading...</canvas>
 </div>
 <a href="http://ludumdare.com/compo/ludum-dare-35/?action=preview&uid=64951">View on Ludum Dare</a>
 <p>
-NOTE: This emscripten port was created a day after the Ludum Dare compo ended,
-and contains timing/physics/collision bug fixes not present in the original
-downloadable versions. You should take that into account if you plan to rate the
-game based solely on this web version.
+NOTE: This emscripten port was created after the Ludum Dare compo, and has a few
+differences in physics / timing etc.
 </p>
 <script>
 var Module = {
@@ -59,7 +58,20 @@ var Module = {
 };
 </script>
 <script>
+
+var webgl_support = true;
+
+try {
+	var canvas = document.createElement('canvas');
+	var ctx = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+	var exts = ctx.getSupportedExtensions();
+} catch (e) {
+	webgl_support = false;
+	document.getElementById('main').innerHTML = "WebGL not supported :(";
+}
+
 (function() {
+	if(!webgl_support) return;
 	var memoryInitializer = 'webgame.html.mem';
 	if (typeof Module['locateFile'] === 'function') {
 		memoryInitializer = Module['locateFile'](memoryInitializer);
@@ -72,9 +84,11 @@ var Module = {
 	xhr.send(null);
 })();
 
-var script = document.createElement('script');
-script.src = "webgame.js";
-document.body.appendChild(script);
+if(webgl_support){
+	var script = document.createElement('script');
+	script.src = "webgame.js";
+	document.body.appendChild(script);
+}
 </script>
 </body>
 </html>
